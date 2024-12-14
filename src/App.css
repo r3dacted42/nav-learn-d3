@@ -10,4 +10,22 @@
     display: flex;
     flex-direction: row;
     padding: 8px;
+    padding-bottom: 0;
+}
+
+.title {
+    font-size: large;
+    font-weight: bold;
+}
+
+.btn {
+    text-decoration: none;
+    border: 1px solid gray;
+    border-radius: 8px;
+    background-color: gainsboro;
+    padding: 2px 8px;
+}
+
+.btn:hover {
+    background-color: whitesmoke;
 }

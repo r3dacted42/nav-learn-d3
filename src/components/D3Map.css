@@ -3,11 +3,13 @@
 }
 
 .map {
+    position: relative;
     border: 1px solid gray;
     border-radius: 8px;
     margin: 8px;
     background-color: whitesmoke;
     flex-grow: 1;
+    display: flex;
 }
 
 .grid line {
@@ -15,4 +17,48 @@
     stroke-opacity: 0.75;
     shape-rendering: crispEdges;
     stroke-dasharray: 2,2;
+}
+
+.map-svg {
+    flex-grow: 1;
+}
+
+.map-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: flex;
+    gap: 10px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.filter-btn, .reset-zoom-btn {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn.active {
+    background-color: #e0e0e0;
+}
+
+.filter-btn .icon {
+    width: 24px;
+    height: 24px;
+}
+
+.reset-zoom-btn {
+    background-color: #f0f0f0;
+}
+
+.reset-zoom-btn:hover {
+    background-color: #e0e0e0;
 }

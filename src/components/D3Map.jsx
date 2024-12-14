@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import nodeData from '../data.json';
 import * as d3 from 'd3';
 import './D3Map.css';
@@ -9,6 +9,12 @@ export default function D3Map() {
     const containerRef = useRef(null);
     const gridRef = useRef(null);
     const [tooltip, setTooltipVisible, setTooltipData, setPageXY] = useTooltip();
+
+    // State to track active filters
+    const [activeFilters, setActiveFilters] = useState([]);
+
+    // File type icons mapping
+    const fileTypes = ["pdf", "docx", "pptx", "mp3", "mp4"];
 
     useEffect(() => {
         const svg = d3.select(svgRef.current);
@@ -30,7 +36,6 @@ export default function D3Map() {
 
         // Function to draw gridlines
         function drawGridlines(xScale, yScale) {
-            // Clear previous gridlines completely
             gridGroup.selectAll("*").remove();
 
             // Vertical gridlines
@@ -43,6 +48,8 @@ export default function D3Map() {
                 .attr("x2", d => xScale(d))
                 .attr("y1", 0)
                 .attr("y2", height)
+                .attr("stroke", "#e0e0e0")
+                .attr("stroke-opacity", 0.5)
                 .attr("stroke-dasharray", "2,2");
 
             // Horizontal gridlines
@@ -55,6 +62,8 @@ export default function D3Map() {
                 .attr("x2", width)
                 .attr("y1", d => yScale(d))
                 .attr("y2", d => yScale(d))
+                .attr("stroke", "#e0e0e0")
+                .attr("stroke-opacity", 0.5)
                 .attr("stroke-dasharray", "2,2");
         }
 
@@ -63,10 +72,10 @@ export default function D3Map() {
 
         // Create zoom behavior with constrained panning
         const zoom = d3.zoom()
-            .scaleExtent([0.5, 4])
+            .scaleExtent([0.75, 4])
             .translateExtent([
-                [-width, -height],     // Top-left boundary
-                [width * 2, height * 2] // Bottom-right boundary
+                [-width * 0.2, -height * 0.2],     // Top-left boundary
+                [width * 1.2, height * 1.2] // Bottom-right boundary
             ])
             .on("zoom", (event) => {
                 // Apply the zoom transformation to the container
@@ -81,19 +90,27 @@ export default function D3Map() {
         // Apply zoom to the svg
         svg.call(zoom);
 
+        // Reset zoom function
+        window.resetZoom = () => {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity);
+        };
+
         // Render nodes
         const nodes = container.selectAll(".node")
             .data(nodeData)
             .enter()
             .append("g")
             .attr("class", "node")
+            .attr("data-type", d => d.type)
             .attr("transform", d => `translate(${xScale(d.x)}, ${yScale(d.y)})`)
             .each(function (d) {
                 d3.select(this)
                     .append("circle")
                     .attr("class", "node-circle")
                     .attr("r", 16);
-                
+
                 d3.select(this)
                     .append("use")
                     .attr("xlink:href", `#${d.type}`)
@@ -104,10 +121,40 @@ export default function D3Map() {
                     .attr("y", -12);
             });
 
+        // Filter function
+        window.filterNodes = (type) => {
+            console.log("filtering for " + type);
+
+            // Toggle filter
+            setActiveFilters(prevFilters => {
+                const currentFilters = new Set(prevFilters);
+                if (currentFilters.has(type)) {
+                    currentFilters.delete(type);
+                } else {
+                    currentFilters.add(type);
+                }
+                const newFilters = Array.from(currentFilters);
+                console.log(newFilters);
+
+                // Apply filtering
+                const nodes = d3.selectAll(".node");
+                if (newFilters.length > 0) {
+                    nodes.style("opacity", function (d) {
+                        return newFilters.includes(d.type) ? 1 : 0.2;
+                    });
+                } else {
+                    // No filters, reset opacity
+                    nodes.style("opacity", 1);
+                }
+
+                return newFilters;
+            });
+        };
+
         // Tooltip interactions
         nodes.on("mouseover", (event, d) => {
             const currentNode = d3.select(event.currentTarget);
-            
+
             // Store original transform
             const originalTransform = currentNode.attr("transform");
             currentNode.attr("data-original-transform", originalTransform);
@@ -126,40 +173,66 @@ export default function D3Map() {
                 y: event.pageY
             });
         })
-        .on("mousemove", (event) => {
-            // Update tooltip position without moving the node
-            setPageXY({
-                x: event.pageX,
-                y: event.pageY
-            });
-        })
-        .on("mouseout", (event, d) => {
-            const currentNode = d3.select(event.currentTarget);
-            
-            // Restore original transform
-            const originalTransform = currentNode.attr("data-original-transform");
-            currentNode
-                .transition()
-                .duration(150)
-                .attr("transform", originalTransform);
+            .on("mousemove", (event) => {
+                // Update tooltip position without moving the node
+                setPageXY({
+                    x: event.pageX,
+                    y: event.pageY
+                });
+            })
+            .on("mouseout", (event, d) => {
+                const currentNode = d3.select(event.currentTarget);
 
-            // Hide tooltip
-            setTooltipVisible(false);
-        });
+                // Restore original transform
+                const originalTransform = currentNode.attr("data-original-transform");
+                currentNode
+                    .transition()
+                    .duration(150)
+                    .attr("transform", originalTransform);
+
+                // Hide tooltip
+                setTooltipVisible(false);
+            });
     }, []);
 
+    // Render filter buttons
+    const renderFilterButtons = () => {
+        return fileTypes.map(type => (
+            <button
+                key={type}
+                onClick={() => window.filterNodes(type)}
+                className={`filter-btn ${activeFilters.includes(type) ? 'active' : ''}`}
+            >
+                <svg width="24" height="24">
+                    <use xlinkHref={`#${type}`} width="24" height="24" />
+                </svg>
+            </button>
+        ));
+    };
+
     return (
-        <>
-            <svg 
-                ref={svgRef} 
-                className='map'
+        <div className="map">
+            <div className="map-controls">
+                <div className="filter-buttons">
+                    {renderFilterButtons()}
+                </div>
+                <button
+                    onClick={() => window.resetZoom()}
+                    className="reset-zoom-btn"
+                >
+                    Reset Zoom
+                </button>
+            </div>
+            <svg
+                ref={svgRef}
+                className="map-svg"
             >
                 <g ref={gridRef} className="grid"></g>
                 <g ref={containerRef}>
                     {/* Nodes will be added here by D3 */}
                 </g>
-            </svg>        
+            </svg>
             {tooltip}
-        </>
+        </div>
     );
 }
