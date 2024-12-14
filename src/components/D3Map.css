@@ -9,3 +9,10 @@
     background-color: whitesmoke;
     flex-grow: 1;
 }
+
+.grid line {
+    stroke: gray;
+    stroke-opacity: 0.75;
+    shape-rendering: crispEdges;
+    stroke-dasharray: 2,2;
+}
