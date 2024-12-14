@@ -82,6 +82,7 @@ export default function D3Map() {
                 // Hide tooltip
                 setTooltipVisible(false);
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
