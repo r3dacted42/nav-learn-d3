@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/nav-learn-d3/static/css/main.779eb20f.css",
-    "main.js": "/nav-learn-d3/static/js/main.9a82d860.js",
+    "main.js": "/nav-learn-d3/static/js/main.c17c5e6c.js",
     "static/media/material-icons-two-tone.woff": "/nav-learn-d3/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
     "static/media/material-icons-two-tone.woff2": "/nav-learn-d3/static/media/material-icons-two-tone.4ef4218c522f1eb6b5b1.woff2",
     "static/media/material-icons-round.woff": "/nav-learn-d3/static/media/material-icons-round.5d681e2edae8c60630db.woff",
@@ -14,10 +14,10 @@
     "static/media/material-icons.woff2": "/nav-learn-d3/static/media/material-icons.0c35d18bf06992036b69.woff2",
     "index.html": "/nav-learn-d3/index.html",
     "main.779eb20f.css.map": "/nav-learn-d3/static/css/main.779eb20f.css.map",
-    "main.9a82d860.js.map": "/nav-learn-d3/static/js/main.9a82d860.js.map"
+    "main.c17c5e6c.js.map": "/nav-learn-d3/static/js/main.c17c5e6c.js.map"
   },
   "entrypoints": [
     "static/css/main.779eb20f.css",
-    "static/js/main.9a82d860.js"
+    "static/js/main.c17c5e6c.js"
   ]
 }
