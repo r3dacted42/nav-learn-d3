@@ -1,0 +1,13 @@
+.App {
+    background-color: gainsboro;
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.title-bar {
+    height: min-content;
+    display: flex;
+    flex-direction: row;
+    padding: 8px;
+}

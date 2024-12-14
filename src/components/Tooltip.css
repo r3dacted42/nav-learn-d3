@@ -1,0 +1,14 @@
+.tooltip {
+    position: absolute;
+    opacity: 0;
+    background-color: whitesmoke;
+    border: 1px solid gray;
+    padding: 8px;
+    border-radius: 8px;
+    pointer-events: none;
+    transition: opacity 150ms ease-in-out;
+    font-size: small;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 8px gray;
+}

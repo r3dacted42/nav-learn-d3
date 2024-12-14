@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "name": "Introduction to Network Science",
+        "type": "pdf",
+        "moduleId": 1,
+        "x": 0.3,
+        "y": 0.3
+    },
+    {
+        "id": 2,
+        "name": "Centrality Measures",
+        "type": "docx",
+        "moduleId": 2,
+        "x": 0.45,
+        "y": 0.49
+    },
+    {
+        "id": 3,
+        "name": "Stress Centralities",
+        "type": "pdf",
+        "moduleId": 2,
+        "x": 0.4,
+        "y": 0.371
+    },
+    {
+        "id": 4,
+        "name": "Community Detection Models",
+        "type": "mp4",
+        "moduleId": 3,
+        "x": 0.57,
+        "y": 0.64
+    },
+    {
+        "id": 5,
+        "name": "Network Centrality Measures",
+        "type": "mp3",
+        "moduleId": 2,
+        "x": 0.46,
+        "y": 0.43
+    },
+    {
+        "id": 6,
+        "name": "Hierarchical clustering",
+        "type": "docx",
+        "moduleId": 3,
+        "x": 0.6,
+        "y": 0.691
+    },
+    {
+        "id": 7,
+        "name": "Understanding social dynamics",
+        "type": "pptx",
+        "moduleId": 3,
+        "x": 0.65,
+        "y": 0.5
+    },
+    {
+        "id": 8,
+        "name": "Bayesian Reasoning",
+        "type": "pdf",
+        "moduleId": 4,
+        "x": 0.67,
+        "y": 0.2
+    },
+    {
+        "id": 9,
+        "name": "Complex systems",
+        "type": "mp4",
+        "moduleId": 4,
+        "x": 0.64,
+        "y": 0.151
+    },
+    {
+        "id": 10,
+        "name": "Graph theory",
+        "type": "mp3",
+        "moduleId": 1,
+        "x": 0.25,
+        "y": 0.27
+    }
+]

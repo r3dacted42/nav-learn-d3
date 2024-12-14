@@ -1,0 +1,11 @@
+.node {
+    fill: gainsboro;
+}
+
+.map {
+    border: 1px solid gray;
+    border-radius: 8px;
+    margin: 8px;
+    background-color: whitesmoke;
+    flex-grow: 1;
+}
