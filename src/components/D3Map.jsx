@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import nodeData from '../data.json';
 import * as d3 from 'd3';
 import './D3Map.css';
@@ -8,34 +8,47 @@ export default function D3Map() {
     const svgRef = useRef(null);
     const [tooltip, setTooltipVisible, setTooltipData, setPageXY] = useTooltip();
 
+    const [width, setWidth] = useState(null);
+    const [height, setHeight] = useState(null);
+
+    const [nodes, setNodes] = useState(null);
+    const [xScale, setXScale] = useState(null);
+    const [yScale, setYScale] = useState(null);
+    const [transform, setTransform] = useState(null);
+
+    function handleResize() {
+        setWidth(svgRef.current.clientWidth);
+        setHeight(svgRef.current.clientHeight);
+    }
+
     useEffect(() => {
-        const width = svgRef.current.clientWidth;
-        const height = svgRef.current.clientHeight;
+        const _width = svgRef.current.clientWidth;
+        const _height = svgRef.current.clientHeight;
+        window.addEventListener("resize", handleResize);
+
         const svg = d3.select(svgRef.current);
-        svg.attr("width", width).attr("height", height);
+        svg.attr("width", _width).attr("height", _height);
 
-        const xScale = d3.scaleLinear()
+        const _xScale = d3.scaleLinear()
             .domain([d3.min(nodeData, d => d.x), d3.max(nodeData, d => d.x)])
-            .range([50, width - 50]);
-        const yScale = d3.scaleLinear()
-            .domain([d3.min(nodeData, d => d.y), d3.max(nodeData, d => d.y)])
-            .range([50, height - 50]);
+            .range([50, _width - 50]);
+        setXScale(_xScale);
 
-        function zoomed({ transform }) {
-            xScale.range([transform.x, transform.x + width]).rangeRound([transform.x, transform.x + width]);
-            yScale.range([transform.y, transform.y + height]).rangeRound([transform.y, transform.y + height]);
-            nodes.attr('transform', () => `translate(${transform.x},${transform.y}) scale(${transform.k})`);
-        }
+        const _yScale = d3.scaleLinear()
+            .domain([d3.min(nodeData, d => d.y), d3.max(nodeData, d => d.y)])
+            .range([50, _height - 50]);
+        setYScale(_yScale);
+
         const zoom = d3.zoom()
             .scaleExtent([0.5, 4])
             .on("zoom", zoomed);
         svg.call(zoom);
 
-        const nodes = svg.selectAll(".node")
+        let _nodes = svg.selectAll(".node")
             .data(nodeData)
             .enter()
             .append("g")
-            .attr("transform", d => `translate(${xScale(d.x)}, ${yScale(d.y)})`)
+            .attr("transform", d => `translate(${_xScale(d.x)}, ${_yScale(d.y)})`)
             .each(function (d) {
                 d3.select(this)
                     .append("circle")
@@ -58,13 +71,13 @@ export default function D3Map() {
             });
         }
 
-        nodes.on("mouseover", (event, d) => {
+        _nodes.on("mouseover", (event, d) => {
             // Increase node size on hover
             d3.select(event.target)
                 .on("mousemove", handleTooltipMove)
                 .transition()
                 .duration(150)
-                .attr("transform", d => `scale(1.2)`);
+                .attr("transform", "scale(1.2)");
 
             // Show tooltip
             setTooltipVisible(true);
@@ -77,13 +90,47 @@ export default function D3Map() {
                     .on("mousemove", null)
                     .transition()
                     .duration(150)
-                    .attr("transform", d => `scale(1)`);
+                    .attr("transform", "scale(1)");
 
                 // Hide tooltip
                 setTooltipVisible(false);
             });
+
+        setNodes(_nodes);
+
+        function zoomed({ transform }) {
+            console.log("zooming...");
+            setTransform(transform);
+        }
+
+        return (() => {
+            window.removeEventListener("resize", handleResize);
+        });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const svg = d3.select(svgRef.current);
+        svg.attr("width", width).attr("height", height);
+        setXScale(d3.scaleLinear()
+            .domain([d3.min(nodeData, d => d.x), d3.max(nodeData, d => d.x)])
+            .range([50, width - 50]));
+        setYScale(d3.scaleLinear()
+            .domain([d3.min(nodeData, d => d.y), d3.max(nodeData, d => d.y)])
+            .range([50, height - 50]));
+    }, [height, width]);
+
+    useEffect(() => {
+        if (!transform || !xScale || !yScale) return;
+        
+        var new_xScale = transform.rescaleX(xScale);
+        var new_yScale = transform.rescaleY(yScale);
+        setXScale(new_xScale);
+        setYScale(new_yScale);
+        nodes.attr('transform', d => `translate(${new_xScale(d.x)}, ${new_yScale(d.y)}) scale(${transform.k})`);
+        setNodes(nodes);
+    }, [transform]);
 
     return (
         <>
