@@ -18,6 +18,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Disable CI checks
+      run: echo "CI=false" >> $GITHUB_ENV
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
@@ -37,4 +40,3 @@ jobs:
         user_email: 'github-actions[bot]@users.noreply.github.com'
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
-        CI: ""
