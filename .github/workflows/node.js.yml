@@ -23,19 +23,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: npm ci
     - run: npm install
     - run: npm run build
-  
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build # This job depends on the successful completion of the "build" job
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-to-docker-registry@v3 # Assuming you don't need Docker for deployment
-        with:
-          repo: r3dacted42/nav-learn-d3   # Replace with your username and repo name
-          token: ${{ secrets.GITHUB_TOKEN }}
-          email: priyansh.agr4@gmail.com  # Optional, provide a deployment email
-          content: ./build  # Specify the directory containing built files
+    - name: Deploy with gh-pages
+      run: |
+        git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
